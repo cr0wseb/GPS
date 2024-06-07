@@ -26,12 +26,15 @@
 
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
                 console.log('Orientation event:', event);
-                if (event.absolute || event.webkitCompassHeading !== undefined) {
-                    currentHeading = event.webkitCompassHeading !== undefined ? event.webkitCompassHeading : event.alpha;
-                    console.log('Current heading:', currentHeading);
+                if (event.webkitCompassHeading !== undefined) {
+                    currentHeading = event.webkitCompassHeading;
+                } else if (event.absolute) {
+                    currentHeading = event.alpha;
                 } else {
-                    console.log('Orientation event data not usable.');
+                    console.error('Orientation data not available or not supported.');
+                    return;
                 }
+                console.log('Current heading:', currentHeading);
                 updateArrow();
             });
 
