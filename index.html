@@ -58,6 +58,7 @@
         document.getElementById('getGPSButton').addEventListener('click', () => {
             alert('Button clicked, getting current position to target : ' + JSON.stringify(currentCoords));
             targetCoords = currentCoords;
+            alert('Button clicked, getting current position to target : ' + JSON.stringify(targetCoords));
         });
 
         function requestDeviceOrientationPermission() {
