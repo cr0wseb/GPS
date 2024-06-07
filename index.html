@@ -20,11 +20,17 @@
             max-height: 300px;
             overflow-y: auto;
         }
+        #startButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <div id="arrow"></div>
     <div id="logs"></div>
+    <button id="startButton">Commencer</button>
     <script>
         const targetCoords = { latitude: 48.8584, longitude: 2.2945 }; // Coordonnées de la cible (Tour Eiffel)
 
@@ -36,6 +42,10 @@
             logs.textContent += message + '\n';
             console.log(message);
         }
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            requestDeviceOrientationPermission();
+        });
 
         function requestDeviceOrientationPermission() {
             logMessage('Requesting DeviceOrientation permission...');
@@ -79,7 +89,6 @@
 
         if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
             logMessage("Geolocation and DeviceOrientationEvent are supported.");
-            requestDeviceOrientationPermission();
             navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
         } else {
             alert('Votre appareil ne supporte pas la géolocalisation ou les événements d\'orientation.');
