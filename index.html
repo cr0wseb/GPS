@@ -17,7 +17,7 @@
     <div id="arrow"></div>
     <script>
         const targetCoords = { latitude: 48.8584, longitude: 2.2945 }; // Coordonnées de la cible (Tour Eiffel)
-        
+
         let currentCoords = null;
         let currentHeading = null;
 
@@ -25,8 +25,12 @@
             navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
 
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
+                console.log('Orientation event:', event);
                 if (event.absolute || event.webkitCompassHeading !== undefined) {
-                    currentHeading = event.alpha || event.webkitCompassHeading;
+                    currentHeading = event.webkitCompassHeading !== undefined ? event.webkitCompassHeading : event.alpha;
+                    console.log('Current heading:', currentHeading);
+                } else {
+                    console.log('Orientation event data not usable.');
                 }
                 updateArrow();
             });
@@ -40,18 +44,23 @@
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             };
+            console.log('Current position:', currentCoords);
             updateArrow();
         }
 
         function showError(error) {
-            console.error('Erreur de géolocalisation: ', error);
+            console.error('Erreur de géolocalisation:', error);
         }
 
         function updateArrow() {
             if (currentCoords && currentHeading !== null) {
                 const bearing = calculateBearing(currentCoords, targetCoords);
+                console.log('Bearing:', bearing);
                 const arrow = document.getElementById('arrow');
                 arrow.style.transform = `rotate(${bearing - currentHeading}deg)`;
+                console.log('Arrow rotation:', bearing - currentHeading);
+            } else {
+                console.log('Current coordinates or heading not available.');
             }
         }
 
