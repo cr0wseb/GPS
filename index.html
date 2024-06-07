@@ -24,13 +24,19 @@
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div id="arrow"></div>
-    <div id="logs"></div>
     <button id="startButton">Commencer</button>
+    <div id="logs"></div>
     <script>
         const targetCoords = { latitude: 48.8584, longitude: 2.2945 }; // Coordonnées de la cible (Tour Eiffel)
 
@@ -44,11 +50,11 @@
         }
 
         document.getElementById('startButton').addEventListener('click', () => {
+            logMessage('Button clicked, requesting DeviceOrientation permission...');
             requestDeviceOrientationPermission();
         });
 
         function requestDeviceOrientationPermission() {
-            logMessage('Requesting DeviceOrientation permission...');
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
