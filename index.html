@@ -37,11 +37,25 @@
             console.log(message);
         }
 
-        if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
-            logMessage("Geolocation and DeviceOrientationEvent are supported.");
+        function requestDeviceOrientationPermission() {
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            logMessage("Motion and orientation permission granted.");
+                            addOrientationListener();
+                        } else {
+                            logMessage("Motion and orientation permission denied.");
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                logMessage("DeviceMotionEvent.requestPermission not available.");
+                addOrientationListener(); // Pour les appareils qui ne nécessitent pas de permission explicite
+            }
+        }
 
-            navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
-
+        function addOrientationListener() {
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
                 logMessage('Orientation event triggered');
                 logMessage('Orientation event data: ' + JSON.stringify(event));
@@ -57,7 +71,12 @@
                 }
                 updateArrow();
             });
+        }
 
+        if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
+            logMessage("Geolocation and DeviceOrientationEvent are supported.");
+            requestDeviceOrientationPermission();
+            navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
         } else {
             alert('Votre appareil ne supporte pas la géolocalisation ou les événements d\'orientation.');
             logMessage('Votre appareil ne supporte pas la géolocalisation ou les événements d\'orientation.');
