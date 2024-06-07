@@ -17,6 +17,8 @@
             background-color: #f0f0f0;
             padding: 10px;
             border: 1px solid #ccc;
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -32,6 +34,7 @@
         function logMessage(message) {
             const logs = document.getElementById('logs');
             logs.textContent += message + '\n';
+            console.log(message);
         }
 
         if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
@@ -40,7 +43,8 @@
             navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
 
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
-                logMessage('Orientation event: ' + JSON.stringify(event));
+                logMessage('Orientation event triggered');
+                logMessage('Orientation event data: ' + JSON.stringify(event));
                 if (event.webkitCompassHeading !== undefined) {
                     currentHeading = event.webkitCompassHeading;
                     logMessage('Current heading (webkitCompassHeading): ' + currentHeading);
