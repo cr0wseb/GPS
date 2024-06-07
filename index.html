@@ -56,13 +56,14 @@
         }
 
         function addOrientationListener() {
-            window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
+            const orientationEvent = 'deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+            window.addEventListener(orientationEvent, event => {
                 logMessage('Orientation event triggered');
                 logMessage('Orientation event data: ' + JSON.stringify(event));
                 if (event.webkitCompassHeading !== undefined) {
                     currentHeading = event.webkitCompassHeading;
                     logMessage('Current heading (webkitCompassHeading): ' + currentHeading);
-                } else if (event.absolute || event.alpha !== null) {
+                } else if (event.absolute === true || event.alpha !== null) {
                     currentHeading = event.alpha;
                     logMessage('Current heading (alpha): ' + currentHeading);
                 } else {
@@ -128,44 +129,11 @@
         function radiansToDegrees(radians) {
             return radians * 180 / Math.PI;
         }
-        
-        // Ajout de gestionnaire pour la permission du capteur de mouvement
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            logMessage('Requesting permission for DeviceMotionEvent.');
-            DeviceMotionEvent.requestPermission()
-                .then(response => {
-                    if (response === 'granted') {
-                        logMessage('Permission granted for DeviceMotionEvent.');
-                        window.addEventListener('deviceorientation', event => {
-                            logMessage('DeviceOrientationEvent triggered: ' + JSON.stringify(event));
-                            if (event.absolute === true || event.alpha !== null) {
-                                currentHeading = event.alpha;
-                                logMessage('Current heading (alpha): ' + currentHeading);
-                                updateArrow();
-                            } else {
-                                logMessage('Device orientation data not available.');
-                            }
-                        });
-                    } else {
-                        logMessage('Permission denied for DeviceMotionEvent.');
-                    }
-                })
-                .catch(error => {
-                    logMessage('Error requesting DeviceMotionEvent permission: ' + error);
-                });
-        } else {
-            logMessage('DeviceMotionEvent.requestPermission not required or not supported.');
-            window.addEventListener('deviceorientation', event => {
-                logMessage('DeviceOrientationEvent triggered: ' + JSON.stringify(event));
-                if (event.absolute === true || event.alpha !== null) {
-                    currentHeading = event.alpha;
-                    logMessage('Current heading (alpha): ' + currentHeading);
-                    updateArrow();
-                } else {
-                    logMessage('Device orientation data not available.');
-                }
-            });
-        }
+
+        // Déclenchement manuel pour vérifier les données de capteur
+        window.addEventListener('devicemotion', event => {
+            logMessage('DeviceMotion event data: ' + JSON.stringify(event));
+        });
     </script>
 </body>
 </html>
