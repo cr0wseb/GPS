@@ -22,19 +22,22 @@
         let currentHeading = null;
 
         if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
+            console.log("Geolocation and DeviceOrientationEvent are supported.");
+
             navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
 
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
                 console.log('Orientation event:', event);
                 if (event.webkitCompassHeading !== undefined) {
                     currentHeading = event.webkitCompassHeading;
-                } else if (event.absolute) {
+                    console.log('Current heading (webkitCompassHeading):', currentHeading);
+                } else if (event.absolute || event.alpha !== null) {
                     currentHeading = event.alpha;
+                    console.log('Current heading (alpha):', currentHeading);
                 } else {
                     console.error('Orientation data not available or not supported.');
                     return;
                 }
-                console.log('Current heading:', currentHeading);
                 updateArrow();
             });
 
