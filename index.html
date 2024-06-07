@@ -38,26 +38,29 @@
         }
 
         function requestDeviceOrientationPermission() {
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission()
+            logMessage('Requesting DeviceOrientation permission...');
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
                         if (permissionState === 'granted') {
-                            logMessage("Motion and orientation permission granted.");
+                            logMessage("DeviceOrientation permission granted.");
                             addOrientationListener();
                         } else {
-                            logMessage("Motion and orientation permission denied.");
+                            logMessage("DeviceOrientation permission denied.");
                         }
                     })
-                    .catch(console.error);
+                    .catch(error => {
+                        logMessage("Error requesting DeviceOrientation permission: " + error);
+                    });
             } else {
-                logMessage("DeviceMotionEvent.requestPermission not available.");
+                logMessage("DeviceOrientationEvent.requestPermission not available.");
                 addOrientationListener(); // Pour les appareils qui ne nécessitent pas de permission explicite
             }
         }
 
         function addOrientationListener() {
-            const orientationEvent = 'deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
-            window.addEventListener(orientationEvent, event => {
+            logMessage('Adding orientation listener...');
+            window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
                 logMessage('Orientation event triggered');
                 logMessage('Orientation event data: ' + JSON.stringify(event));
                 if (event.webkitCompassHeading !== undefined) {
