@@ -11,31 +11,44 @@
             background-size: contain;
             transition: transform 0.3s ease;
         }
+        #logs {
+            margin-top: 20px;
+            white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
     <div id="arrow"></div>
+    <div id="logs"></div>
     <script>
         const targetCoords = { latitude: 48.8584, longitude: 2.2945 }; // Coordonnées de la cible (Tour Eiffel)
 
         let currentCoords = null;
         let currentHeading = null;
 
+        function logMessage(message) {
+            const logs = document.getElementById('logs');
+            logs.textContent += message + '\n';
+        }
+
         if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
-            console.log("Geolocation and DeviceOrientationEvent are supported.");
+            logMessage("Geolocation and DeviceOrientationEvent are supported.");
 
             navigator.geolocation.watchPosition(updatePosition, showError, { enableHighAccuracy: true });
 
             window.addEventListener('deviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', event => {
-                console.log('Orientation event:', event);
+                logMessage('Orientation event: ' + JSON.stringify(event));
                 if (event.webkitCompassHeading !== undefined) {
                     currentHeading = event.webkitCompassHeading;
-                    console.log('Current heading (webkitCompassHeading):', currentHeading);
+                    logMessage('Current heading (webkitCompassHeading): ' + currentHeading);
                 } else if (event.absolute || event.alpha !== null) {
                     currentHeading = event.alpha;
-                    console.log('Current heading (alpha):', currentHeading);
+                    logMessage('Current heading (alpha): ' + currentHeading);
                 } else {
-                    console.error('Orientation data not available or not supported.');
+                    logMessage('Orientation data not available or not supported.');
                     return;
                 }
                 updateArrow();
@@ -43,6 +56,7 @@
 
         } else {
             alert('Votre appareil ne supporte pas la géolocalisation ou les événements d\'orientation.');
+            logMessage('Votre appareil ne supporte pas la géolocalisation ou les événements d\'orientation.');
         }
 
         function updatePosition(position) {
@@ -50,23 +64,23 @@
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             };
-            console.log('Current position:', currentCoords);
+            logMessage('Current position: ' + JSON.stringify(currentCoords));
             updateArrow();
         }
 
         function showError(error) {
-            console.error('Erreur de géolocalisation:', error);
+            logMessage('Erreur de géolocalisation: ' + JSON.stringify(error));
         }
 
         function updateArrow() {
             if (currentCoords && currentHeading !== null) {
                 const bearing = calculateBearing(currentCoords, targetCoords);
-                console.log('Bearing:', bearing);
+                logMessage('Bearing: ' + bearing);
                 const arrow = document.getElementById('arrow');
                 arrow.style.transform = `rotate(${bearing - currentHeading}deg)`;
-                console.log('Arrow rotation:', bearing - currentHeading);
+                logMessage('Arrow rotation: ' + (bearing - currentHeading));
             } else {
-                console.log('Current coordinates or heading not available.');
+                logMessage('Current coordinates or heading not available.');
             }
         }
 
